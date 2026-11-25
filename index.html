@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06070a">
+<title>V SLIDE · 张礼薇</title>
+<style>
+:root{
+  --accent:#ff8a4c;
+  --glowRgb:255,138,76;
+  --bg:#06070a;
+  --fg:#e9edf2;
+  --muted:#8b95a1;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  margin:0;min-height:100%;color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  background:
+    radial-gradient(120% 42% at 50% 0%, rgba(var(--glowRgb),.22), rgba(var(--glowRgb),0) 62%),
+    var(--bg);
+  overscroll-behavior:none;
+  transition:background .45s ease;
+}
+.app{
+  min-height:100dvh;display:flex;flex-direction:column;
+  padding:16px 16px calc(14px + env(safe-area-inset-bottom));
+}
+/* ---------- header ---------- */
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{display:block;height:44px;width:auto}
+.sub{font-size:10px;letter-spacing:.14em;color:#5c6774}
+.auto{
+  flex:none;font-size:11px;color:#c3ccd7;letter-spacing:.02em;
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);
+  border-radius:999px;padding:7px 13px;cursor:pointer;user-select:none;
+  transition:border-color .2s,background .2s;
+}
+.auto:active{background:rgba(255,255,255,.1)}
+/* ---------- stage ---------- */
+.stage{
+  position:relative;margin:16px -16px 0;aspect-ratio:4/3;background:#0b0d11;overflow:hidden;
+  box-shadow:0 26px 70px -34px var(--accent),0 0 0 1px rgba(255,255,255,.05);
+  touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;
+  transition:box-shadow .45s ease;
+}
+.stage:active{cursor:grabbing}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;pointer-events:none;will-change:opacity}
+.lv{
+  position:absolute;top:12px;right:12px;padding:4px 10px;border-radius:999px;
+  font-size:10px;letter-spacing:.12em;color:#fff;
+  background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.18);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none;
+}
+/* ---------- rheostat ---------- */
+.rheo{margin-top:18px;user-select:none;-webkit-user-select:none}
+.rail{position:relative;height:32px;margin:0 12px;touch-action:none;cursor:pointer}
+.railBg{position:absolute;left:0;right:0;top:50%;height:4px;border-radius:2px;background:#20262e;transform:translateY(-50%)}
+.fill{
+  position:absolute;left:0;top:50%;height:4px;border-radius:2px;transform:translateY(-50%);
+  background:var(--accent);box-shadow:0 0 14px var(--accent);width:0;
+  transition:background .35s ease,box-shadow .35s ease;
+}
+.mark{position:absolute;top:50%;width:2px;border-radius:1px;background:rgba(255,255,255,.22);transform:translate(-1px,-50%)}
+.mark.major{background:rgba(255,255,255,.5);width:2px}
+.thumb{
+  position:absolute;top:50%;width:22px;height:22px;border-radius:50%;
+  background:#fff;border:3px solid var(--accent);box-shadow:0 0 18px var(--accent),0 2px 8px rgba(0,0,0,.6);
+  transform:translate(-50%,-50%);left:0;pointer-events:none;transition:border-color .35s ease,box-shadow .35s ease;
+}
+.labels{position:relative;height:20px;margin-top:6px}
+.labels span{
+  position:absolute;top:0;font-size:10px;letter-spacing:.04em;color:#5f6a76;
+  transform:translateX(-50%);white-space:nowrap;transition:color .25s ease;
+}
+.labels span.on{color:#e8eef6}
+/* ---------- info ---------- */
+.info{padding:16px 2px 0}
+.row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.name{font-size:clamp(19px,5.4vw,23px);font-weight:700;letter-spacing:.02em}
+.calc{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;letter-spacing:.06em;color:var(--muted)}
+.line{font-size:clamp(13px,3.6vw,15px);line-height:1.7;color:#c6cfda;margin-top:8px;min-height:26px}
+.line em{font-style:normal;color:#98a4b2}
+.segs{display:flex;gap:5px;margin-top:14px}
+.segs i{flex:1;height:3px;border-radius:2px;background:#222933;transition:background .3s ease,box-shadow .3s ease}
+.segs i.on{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+/* ---------- note ---------- */
+.note{
+  margin-top:18px;padding:14px 15px 15px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022);
+}
+.note h4{margin:0 0 8px;font-size:10px;font-weight:500;letter-spacing:.22em;color:#79848f}
+.note p{margin:0;font-size:clamp(11px,3vw,12.5px);line-height:1.85;color:#8a95a2}
+.note p + p{margin-top:7px}
+/* ---------- pick ---------- */
+.pick{
+  display:block;width:100%;margin-top:16px;padding:15px 16px;border:0;border-radius:13px;
+  font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.04em;color:#0b0d12;
+  background:var(--accent);cursor:pointer;box-shadow:0 10px 30px -12px var(--accent);
+  transition:background .35s ease,box-shadow .35s ease,transform .1s ease;
+}
+.pick:active{transform:scale(.99)}
+/* ---------- sheet ---------- */
+.sheet{position:fixed;inset:0;display:none;z-index:50;background:rgba(0,0,0,.62);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sheet.show{display:flex;align-items:flex-end;justify-content:center}
+.sheetPanel{
+  width:100%;max-width:460px;max-height:92dvh;overflow:auto;background:#0b0d12;
+  border-radius:20px 20px 0 0;border:1px solid rgba(255,255,255,.08);
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+}
+.sheetTitle{font-size:11px;letter-spacing:.22em;color:#7b8591;text-align:center;margin-bottom:12px}
+.shot img{display:block;width:100%;border-radius:12px;background:#0b0d12}
+.acts{display:flex;gap:10px;margin-top:14px}
+.act{
+  flex:1;padding:13px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);color:#e9edf2;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+}
+.act.primary{background:var(--accent);border-color:transparent;color:#0b0d12}
+.hint{margin-top:12px;font-size:12px;line-height:1.75;color:#8b95a1;text-align:center;word-break:break-word}
+.hint b{color:#dfe7f1;font-weight:600}
+.close{margin-top:14px;text-align:center;font-size:12.5px;color:#79848f;cursor:pointer;letter-spacing:.06em}
+.copyBox{margin-top:12px;display:none}
+.copyBox textarea{
+  width:100%;height:46px;resize:none;border-radius:10px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04);color:#e9edf2;font-family:ui-monospace,Consolas,monospace;
+  font-size:13px;padding:12px;text-align:center;
+}
+/* ---------- footer ---------- */
+footer{
+  margin-top:auto;padding-top:22px;text-align:center;
+  font-size:9px;letter-spacing:.26em;color:#39424c;
+}
+@media (min-height:900px){ .note{margin-top:26px} .info{padding-top:20px} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <img class="logo" src="img/logo.png" alt="V SLIDE">
+      <div class="sub">张礼薇 · 人格变阻器</div>
+    </div>
+    <div class="auto" id="autoBtn" role="button" tabindex="0">↻ 自动播放</div>
+  </header>
+
+  <div class="stage" id="stage" aria-label="人格图像">
+    <div id="frames"></div>
+    <div class="lv" id="lvBadge">Lv.3 / 5</div>
+  </div>
+
+  <div class="rheo">
+    <div class="rail" id="rail" role="slider" tabindex="0" aria-label="人格档位"
+         aria-valuemin="0" aria-valuemax="12" aria-valuenow="6">
+      <div class="railBg"></div>
+      <div class="fill" id="fill"></div>
+      <div id="marks"></div>
+      <div class="thumb" id="thumb"></div>
+    </div>
+    <div class="labels" id="labels">
+      <span>薇鲸鲸</span><span>小薇</span><span>薇工</span><span>薇圣</span><span>V-800</span>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="row">
+      <div class="name" id="name">薇工</div>
+      <div class="calc" id="calc">老友</div>
+    </div>
+    <div class="line" id="line">我劝你不要不识抬举</div>
+    <div class="segs" id="segs"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <button class="pick" id="pickBtn">就选 3 · 薇工</button>
+
+  <div class="note">
+    <h4>关于 V SLIDE</h4>
+    <p>拖动滑块改变人格，切换可能需要一定时间。</p>
+  </div>
+
+  <footer>V SLIDE · 2026</footer>
+
+  <div class="sheet" id="sheet">
+    <div class="sheetPanel">
+      <div class="sheetTitle">选好了，发给张礼薇</div>
+      <div class="shot"><img id="shotImg" alt="结果卡"></div>
+      <div class="acts">
+        <button class="act primary" id="copyBtn">复制文字</button>
+        <button class="act" id="saveBtn">保存图片</button>
+      </div>
+      <div class="hint" id="sheetHint"></div>
+      <div class="copyBox" id="copyBox"><textarea id="copyArea" readonly></textarea></div>
+      <div class="close" id="closeBtn">收起</div>
+    </div>
+  </div>
+</div>
+
+<!-- 一人一链接：把“好友一”换成名字，把地址发给对应的人。
+     链接里的 ?f= 会显示在结果卡和复制出来的文字里。下面留 5 个位置，想加直接接着写：
+     你的地址/index.html?f=好友一
+     你的地址/index.html?f=好友二
+     你的地址/index.html?f=好友三
+     你的地址/index.html?f=好友四
+     你的地址/index.html?f=好友五
+     不想带名字就把 ?f=… 删掉，结果卡会显示“V SLIDE · 2026”。 -->
+
+<script>
+(function(){
+  var KEYS=['vv0-1-m','vv0-2','vv1-1','vv1-2-m','vv1-3','vv2-1','vv2-2-m','vv2-3','vv3-1','vv3-2-m','vv3-3','vv4-1','vv4-2-m'];
+  var LAST=KEYS.length-1;           /* 12 */
+  var MAJOR=[0,3,6,9,12];
+  var LEVELS=[
+    {n:'薇鲸鲸',c:'情绪价值',l:'哦鲸鲸~~~',a:'#ff6fa5'},
+    {n:'小薇',c:'平衡',l:'你好，我是小薇',a:'#e0a95a'},
+    {n:'薇工',c:'老友',l:'我劝你不要不识抬举',a:'#ff8a4c'},
+    {n:'薇圣',c:'解答',l:'大语言模型，是通往AGI的必经之路',a:'#3f7bff'},
+    {n:'V-800',c:'∞',l:'You are terminated',a:'#ff3b30'}
+  ];
+
+  var $=function(id){return document.getElementById(id)};
+  var framesEl=$('frames'), stage=$('stage'), rail=$('rail'), fill=$('fill'),
+      thumb=$('thumb'), marksEl=$('marks'), labelsEl=$('labels'),
+      nameEl=$('name'), calcEl=$('calc'), lineEl=$('line'),
+      lvEl=$('lvBadge'), segsEl=$('segs'), autoBtn=$('autoBtn'), pickBtn=$('pickBtn');
+
+  /* ---------- frames ---------- */
+  var imgs=KEYS.map(function(k){
+    var im=new Image(); im.alt=''; im.draggable=false; im.decoding='async';
+    im.style.opacity='0'; framesEl.appendChild(im); return im;
+  });
+  var want=new Array(KEYS.length).fill(false);
+  function ensure(i){
+    if(i<0||i>LAST||want[i]) return;
+    want[i]=true; imgs[i].src='img/'+KEYS[i]+'.jpg';
+  }
+  ensure(0); ensure(1); ensure(2);
+  var cursor=3;
+  (function drip(){
+    if(cursor>LAST) return;
+    ensure(cursor++);
+    setTimeout(drip,140);
+  })();
+
+  /* ---------- marks ---------- */
+  KEYS.forEach(function(k,i){
+    var m=document.createElement('div');
+    m.className='mark'+(MAJOR.indexOf(i)>-1?' major':'');
+    m.style.left=(i/LAST*100)+'%';
+    m.style.height=(MAJOR.indexOf(i)>-1?9:5)+'px';
+    marksEl.appendChild(m);
+  });
+  /* labels at major positions */
+  var labelEls=[].slice.call(labelsEl.children);
+  labelEls.forEach(function(el,i){
+    var p=MAJOR[i]/LAST*100;
+    el.style.left='calc(12px + (100% - 24px) * '+p/100+')';
+    if(i===0){ el.style.transform='translateX(-12px)'; }
+    if(i===labelEls.length-1){ el.style.transform='translateX(calc(-100% + 12px))'; }
+  });
+
+  /* ---------- state ---------- */
+  var pos=6, lastLvl=-1, raf=null, auto=false, autoTimer=null;
+  /* 支持 ?p=9 直接打开某一档（0–12，可小数） */
+  try{
+    var qp=new URLSearchParams(location.search).get('p');
+    if(qp!==null && qp!==''){
+      var qv=parseFloat(qp);
+      if(!isNaN(qv)) pos=Math.max(0,Math.min(LAST,qv));
+      ensure(Math.floor(pos)); ensure(Math.ceil(pos));
+    }
+  }catch(e){}
+
+  function hexToRgb(h){
+    var v=h.replace('#','');
+    if(v.length===3) v=v[0]+v[0]+v[1]+v[1]+v[2]+v[2];
+    var n=parseInt(v,16);
+    return [(n>>16)&255,(n>>8)&255,n&255].join(',');
+  }
+
+  function applyLevel(l){
+    var s=LEVELS[l];
+    nameEl.textContent=s.n; calcEl.textContent=s.c;
+    lineEl.textContent=s.l; lvEl.textContent='Lv.'+(l+1)+' / 5';
+    document.documentElement.style.setProperty('--accent',s.a);
+    document.documentElement.style.setProperty('--glowRgb',hexToRgb(s.a));
+    [].forEach.call(segsEl.children,function(el,k){ el.className = k<=l ? 'on' : ''; });
+    labelEls.forEach(function(el,k){ el.classList.toggle('on',k===l); });
+    if(pickBtn) pickBtn.textContent='就选 '+(l+1)+' · '+s.n;
+  }
+
+  function render(){
+    var i=Math.floor(pos+1e-6), f=pos-i;
+    if(i>=LAST){ i=LAST; f=0; }
+    /* 底图恒为不透明，只有上一层做淡入——两层同时半透明会把背景透出来，看着就是"闪黑" */
+    for(var k=0;k<=LAST;k++){
+      var o=0;
+      if(k===i) o=1;
+      else if(k===i+1) o=f;
+      imgs[k].style.opacity=o.toFixed(3);
+    }
+    var p=pos/LAST*100;
+    fill.style.width=p+'%';
+    thumb.style.left=p+'%';
+    rail.setAttribute('aria-valuenow',Math.round(pos));
+    var lvl=Math.min(4,Math.max(0,Math.round(pos/3)));
+    if(lvl!==lastLvl){ lastLvl=lvl; applyLevel(lvl); }
+  }
+
+  function snap(p){
+    var major=Math.round(p/3)*3;
+    if(Math.abs(p-major)<=0.55) return major;
+    return Math.round(p);
+  }
+
+  function cancelAuto(){
+    if(!auto) return;
+    auto=false; autoTimer&&clearTimeout(autoTimer);
+    autoBtn.textContent='↻ 自动播放';
+  }
+
+  /* ---------- animation ---------- */
+  function animateTo(target,dur,cb,linear){
+    if(raf) cancelAnimationFrame(raf);
+    var from=pos, t0=performance.now();
+    function step(now){
+      var k=Math.min(1,(now-t0)/dur);
+      var e=linear?k:(k<0.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2);
+      pos=from+(target-from)*e; render();
+      if(k<1) raf=requestAnimationFrame(step);
+      else { pos=target; render(); cb&&cb(); }
+    }
+    raf=requestAnimationFrame(step);
+  }
+
+  /* ---------- pointer ---------- */
+  function posFromX(clientX, el){
+    var r=el.getBoundingClientRect();
+    var t=(clientX-r.left)/r.width;
+    t=Math.max(0,Math.min(1,t));
+    return t*LAST;
+  }
+  var drag=null;
+  function onDown(e){
+    if(auto) cancelAuto();
+    if(raf) cancelAnimationFrame(raf);
+    drag={el:e.currentTarget, id:e.pointerId};
+    try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(err){}
+    pos=posFromX(e.clientX,drag.el);
+    ensure(Math.floor(pos)); ensure(Math.ceil(pos));
+    render();
+    e.preventDefault();
+  }
+  function onMove(e){
+    if(!drag||drag.id!==e.pointerId) return;
+    pos=posFromX(e.clientX,drag.el);
+    ensure(Math.floor(pos)); ensure(Math.ceil(pos));
+    render();
+  }
+  function onUp(e){
+    if(!drag) return;
+    if(drag.id!==e.pointerId) return;
+    drag=null;
+    pos=snap(pos); render();
+  }
+  [rail,stage].forEach(function(el){
+    el.addEventListener('pointerdown',onDown);
+    el.addEventListener('pointermove',onMove);
+    el.addEventListener('pointerup',onUp);
+    el.addEventListener('pointercancel',onUp);
+  });
+
+  /* tap a label */
+  labelEls.forEach(function(el,i){
+    el.style.pointerEvents='auto';
+    el.addEventListener('click',function(){
+      cancelAuto(); animateTo(MAJOR[i],650);
+    });
+  });
+
+  /* keyboard */
+  rail.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+      cancelAuto();
+      var step=e.shiftKey?3:1;
+      pos=Math.max(0,Math.min(LAST,Math.round(pos)+(e.key==='ArrowRight'?step:-step)));
+      render(); e.preventDefault();
+    }
+  });
+
+  /* autoplay：13 帧匀速扫过、来回往复，不在大刻度停留 */
+  var sweepDir=1, FRAME_MS=380;
+  function sweep(){
+    var target=sweepDir>0?LAST:0;
+    var dur=Math.max(500,Math.abs(target-pos)*FRAME_MS);
+    animateTo(target,dur,function(){
+      sweepDir*=-1;
+      if(auto) autoTimer=setTimeout(sweep,300);
+    },true);
+  }
+  autoBtn.addEventListener('click',function(){
+    auto=!auto;
+    autoTimer&&clearTimeout(autoTimer);
+    if(auto){ autoBtn.textContent='⏸ 暂停'; sweep(); }
+    else autoBtn.textContent='↻ 自动播放';
+  });
+
+  /* ---------- 确认 & 结果卡 ---------- */
+  /* 一人一链接：链接里带 ?f=好友名字，复制出来的文字和结果卡都会带上这个名字 */
+  var FRIEND=(function(){ try{ return (new URLSearchParams(location.search).get('f')||'').trim(); }catch(e){ return ''; } })();
+  /* 预留：以后接 CloudBase / 云函数，把 HTTP 地址填进来，点确认就会自动上报；留空则只走复制 */
+  var REPORT_URL='';
+
+  var sheet=$('sheet'), shotImg=$('shotImg'), shotWrap=shotImg.parentNode,
+      copyBtn=$('copyBtn'), saveBtn=$('saveBtn'), closeBtn=$('closeBtn'),
+      hintEl=$('sheetHint'), copyBox=$('copyBox'), copyArea=$('copyArea');
+  var lastCanvas=null;
+
+  function lvlNow(){ return Math.min(4,Math.max(0,Math.round(pos/3))); }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  function copyText(l){
+    var LV=LEVELS[l];
+    return '#VSLIDE '+(l+1)+'·'+LV.n+(FRIEND?(' @'+FRIEND):'');
+  }
+
+  function drawCard(l){
+    var LV=LEVELS[l], W=750, H=1000;
+    var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle='#0b0d12'; ctx.fillRect(0,0,W,H);
+    var im=imgs[MAJOR[l]];
+    if(im && im.complete && im.naturalWidth){
+      var sw=im.naturalWidth, sh=im.naturalHeight, dh=562;
+      var sc=Math.max(W/sw, dh/sh), cw=sw*sc, ch=sh*sc;
+      ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,dh); ctx.clip();
+      ctx.drawImage(im,(W-cw)/2,(dh-ch)/2,cw,ch); ctx.restore();
+      var g=ctx.createLinearGradient(0,dh-150,0,dh);
+      g.addColorStop(0,'rgba(11,13,18,0)'); g.addColorStop(1,'rgba(11,13,18,.96)');
+      ctx.fillStyle=g; ctx.fillRect(0,dh-150,W,150);
+    }
+    ctx.textAlign='left';
+    ctx.fillStyle='#6b7684'; ctx.font='600 22px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('V  S L I D E', 48, 632);
+    ctx.fillStyle='#8b95a1'; ctx.font='400 21px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('张礼薇 · 人格变阻器', 48, 662);
+    ctx.fillStyle='#ffffff'; ctx.font='800 52px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('我选了 '+(l+1)+' · '+LV.n, 48, 758);
+    ctx.fillStyle=LV.a; ctx.font='700 26px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText(LV.c, 48, 804);
+    ctx.fillStyle='#cfd8e3'; ctx.font='400 29px "PingFang SC","Microsoft YaHei",sans-serif';
+    var txt='「'+LV.l+'」', maxW=W-96, line='', y=874;
+    for(var i=0;i<txt.length;i++){
+      var t=line+txt.charAt(i);
+      if(ctx.measureText(t).width>maxW && line){ ctx.fillText(line,48,y); line=txt.charAt(i); y+=44; }
+      else line=t;
+    }
+    if(line) ctx.fillText(line,48,y);
+    ctx.textAlign='right'; ctx.fillStyle='#4e5865';
+    ctx.font='400 20px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText(FRIEND?('来自 '+FRIEND+' · V SLIDE 2026'):('V SLIDE · 2026'), W-48, 960);
+    return cv;
+  }
+
+  function openSheet(){
+    cancelAuto();
+    var l=lvlNow(), cv=drawCard(l); lastCanvas=cv;
+    try{
+      shotImg.src=cv.toDataURL('image/png');
+      shotWrap.style.display='';
+    }catch(err){
+      shotWrap.style.display='none';
+    }
+    /* 图还没加载完的话，加载完再重画一次 */
+    var im=imgs[MAJOR[l]];
+    if(im && !(im.complete && im.naturalWidth)){
+      ensure(MAJOR[l]);
+      im.addEventListener('load',function once(){
+        im.removeEventListener('load',once);
+        if(!sheet.classList.contains('show')) return;
+        var cv2=drawCard(l); lastCanvas=cv2;
+        try{ shotImg.src=cv2.toDataURL('image/png'); }catch(e){}
+      });
+    }
+    hintEl.innerHTML='复制下面这行发给张礼薇：<b>'+esc(copyText(l))+'</b><br>或者长按上面的图片保存，再发给她。';
+    copyBox.style.display='none';
+    sheet.classList.add('show');
+  }
+
+  function legacyCopy(t){
+    var ta=document.createElement('textarea'); ta.value=t;
+    ta.style.position='fixed'; ta.style.left='-9999px'; ta.style.top='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta); return ok;
+  }
+
+  function doCopy(){
+    var t=copyText(lvlNow());
+    var ok=function(){ hintEl.innerHTML='已复制 ✓ 去微信粘贴发给张礼薇'; };
+    var bad=function(){
+      copyArea.value=t; copyBox.style.display='block';
+      copyArea.focus(); copyArea.select();
+      hintEl.innerHTML='没自动复制成功，长按上面框里的文字手动复制。';
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(ok,function(){ legacyCopy(t)?ok():bad(); });
+    }else{ legacyCopy(t)?ok():bad(); }
+  }
+
+  function report(l){
+    if(!REPORT_URL) return;
+    try{
+      fetch(REPORT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({f:FRIEND||'',level:l+1,name:LEVELS[l].n,tag:LEVELS[l].c,t:Date.now()})}).catch(function(){});
+    }catch(e){}
+  }
+
+  pickBtn.addEventListener('click',function(){ var l=lvlNow(); report(l); openSheet(); });
+  copyBtn.addEventListener('click',doCopy);
+  saveBtn.addEventListener('click',function(){
+    if(!lastCanvas) return;
+    try{
+      var a=document.createElement('a');
+      a.download='vslide-'+(lvlNow()+1)+'.png';
+      a.href=lastCanvas.toDataURL('image/png');
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      hintEl.innerHTML='已保存到相册/下载。微信里请长按图片保存。';
+    }catch(e){ hintEl.innerHTML='这台设备不支持直接下载，长按上面的图片保存即可。'; }
+  });
+  closeBtn.addEventListener('click',function(){ sheet.classList.remove('show'); });
+  sheet.addEventListener('click',function(e){ if(e.target===sheet) sheet.classList.remove('show'); });
+
+  applyLevel(2); render();
+
+  /* 调试用：?sheet=1 直接打开结果卡 */
+  try{ if(new URLSearchParams(location.search).get('sheet')) openSheet(); }catch(e){}
+})();
+</script>
+</body>
+</html>
